@@ -7,6 +7,8 @@ function App() {
     let secondsPassed = 0;
     let oldTimeStamp = 0;
 
+    console.log();
+
     const gameLoop = (timeStamp) => {
       const ctx = getContext();
       
@@ -16,7 +18,7 @@ function App() {
 
       requestAnimationFrame(gameLoop);
     };
-    gameLoop();
+    gameLoop(console.timeStamp);
   }, []);
 
   function drawFps(secondsPassed, timeStamp, oldTimeStamp, ctx) {
