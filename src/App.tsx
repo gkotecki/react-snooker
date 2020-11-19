@@ -43,10 +43,9 @@ function App() {
       oldTimeStamp = timeStamp;
       const fps = Math.round(1 / secondsPassed);
 
+      // Calls game lifecycle functions
       updateState(secondsPassed || 0);
-
       detectCollisions();
-
       drawCanvas(ctx, fps);
 
       requestAnimationFrame(gameLoop);
@@ -66,7 +65,7 @@ function App() {
    * Detects collisions between all entities
    */
   function detectCollisions(): void {
-    let gameObjects: Ball[] = [whiteBall, ...redBalls];
+    const gameObjects: Ball[] = [whiteBall, ...redBalls];
     let ball1: Ball;
     let ball2: Ball;
 
@@ -77,10 +76,24 @@ function App() {
     for (let i = 0; i < gameObjects.length; i++) {
       ball1 = gameObjects[i];
 
+      // Check for left and right
+      if (ball1.x < 50 + ball1.radius) {
+        ball1.vx = Math.abs(ball1.vx) * 0.7;
+      } else if (ball1.x > 450 - ball1.radius) {
+        ball1.vx = -Math.abs(ball1.vx) * 0.7;
+      }
+
+      // Check for bottom and top
+      if (ball1.y < 50 + ball1.radius) {
+        ball1.vy = Math.abs(ball1.vy) * 0.7;
+      } else if (ball1.y > 650 - ball1.radius) {
+        ball1.vy = -Math.abs(ball1.vy) * 0.7;
+      }
+
       for (let j = i + 1; j < gameObjects.length; j++) {
         ball2 = gameObjects[j];
 
-        if (Collision.balls(ball1, ball2)) {
+        if (Collision.onBalls(ball1, ball2)) {
           ball1.isColliding = true;
           ball2.isColliding = true;
 
@@ -129,16 +142,16 @@ function App() {
     //Draw table holes
     ctx.fillStyle = "#000";
     ctx.beginPath();
-    ctx.arc(50, 50, 16, 0, 2*Math.PI);
-    ctx.arc(450, 50, 16, 0, 2*Math.PI);
+    ctx.arc(55, 55, 18, 0, 2*Math.PI);
+    ctx.arc(445, 55, 18, 0, 2*Math.PI);
     ctx.fill();
     ctx.beginPath();
-    ctx.arc(50, 350, 16, 0, 2*Math.PI);
-    ctx.arc(450, 350, 16, 0, 2*Math.PI);
+    ctx.arc(50, 350, 18, 0, 2*Math.PI);
+    ctx.arc(450, 350, 18, 0, 2*Math.PI);
     ctx.fill();
     ctx.beginPath();
-    ctx.arc(50, 650, 16, 0, 2*Math.PI);
-    ctx.arc(450, 650, 16, 0, 2*Math.PI);
+    ctx.arc(55, 645, 18, 0, 2*Math.PI);
+    ctx.arc(445, 645, 18, 0, 2*Math.PI);
     ctx.fill();
 
     // Draw white ball
