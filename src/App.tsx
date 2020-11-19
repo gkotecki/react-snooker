@@ -1,12 +1,30 @@
 import React, { useRef, useEffect } from "react";
 import { Ball } from "./common/Ball";
+import { Collision } from "./common/Collision";
 
 function App() {
   // React canvas element reference
   const canvasRef = useRef(null);
 
   // Initializing game entities
-  const whiteBall = new Ball([250, 350], [10,10], "#fff");
+  const whiteBall = new Ball([280,550], [-8,-85], "#fff");
+  const redBalls = [
+    new Ball([170 + 26*1,150], [0,0], "#f22"),
+    new Ball([170 + 26*2,150], [0,0], "#f22"),
+    new Ball([170 + 26*3,150], [0,0], "#f22"),
+    new Ball([170 + 26*4,150], [0,0], "#f22"),
+    new Ball([170 + 26*5,150], [0,0], "#f22"),
+    new Ball([183 + 26*1,172], [0,0], "#f22"),
+    new Ball([183 + 26*2,172], [0,0], "#f22"),
+    new Ball([183 + 26*3,172], [0,0], "#f22"),
+    new Ball([183 + 26*4,172], [0,0], "#f22"),
+    new Ball([196 + 26*1,194], [0,0], "#f22"),
+    new Ball([196 + 26*2,194], [0,0], "#f22"),
+    new Ball([196 + 26*3,194], [0,0], "#f22"),
+    new Ball([209 + 26*1,216], [0,0], "#f22"),
+    new Ball([209 + 26*2,216], [0,0], "#f22"),
+    new Ball([222 + 26*1,238], [0,0], "#f22"),
+  ];
 
   /**
    * React update hook
@@ -27,6 +45,8 @@ function App() {
 
       updateState(secondsPassed || 0);
 
+      detectCollisions();
+
       drawCanvas(ctx, fps);
 
       requestAnimationFrame(gameLoop);
@@ -37,14 +57,61 @@ function App() {
   /**
    * Updates game state to prepare for next draw cycle
    */
-  function updateState(secondsPassed: number) {
-    whiteBall.update(secondsPassed)
+  function updateState(secondsPassed: number): void {
+    whiteBall.update(secondsPassed);
+    redBalls.forEach((ball) => ball.update(secondsPassed));
+  }
+
+  /**
+   * Detects collisions between all entities
+   */
+  function detectCollisions(): void {
+    let gameObjects: Ball[] = [whiteBall, ...redBalls];
+    let ball1: Ball;
+    let ball2: Ball;
+
+    // Resets all entities collision state to false
+    gameObjects.forEach((b) => b.isColliding = false);
+
+    // Loop between all entities to check for individual collision
+    for (let i = 0; i < gameObjects.length; i++) {
+      ball1 = gameObjects[i];
+
+      for (let j = i + 1; j < gameObjects.length; j++) {
+        ball2 = gameObjects[j];
+
+        if (Collision.balls(ball1, ball2)) {
+          ball1.isColliding = true;
+          ball2.isColliding = true;
+
+          let vCollision = { x: ball2.x - ball1.x, y: ball2.y - ball1.y };
+          let distance = Math.sqrt(
+            (ball2.x - ball1.x) * (ball2.x - ball1.x) +
+              (ball2.y - ball1.y) * (ball2.y - ball1.y)
+          );
+          let vCollisionNorm = { x: vCollision.x / distance, y: vCollision.y / distance, };
+          let vRelativeVelocity = { x: ball1.vx - ball2.vx, y: ball1.vy - ball2.vy, };
+          let speed =
+            vRelativeVelocity.x * vCollisionNorm.x +
+            vRelativeVelocity.y * vCollisionNorm.y;
+
+          if (speed < 0) {
+            break;
+          }
+
+          ball1.vx -= speed * vCollisionNorm.x;
+          ball1.vy -= speed * vCollisionNorm.y;
+          ball2.vx += speed * vCollisionNorm.x;
+          ball2.vy += speed * vCollisionNorm.y;
+        }
+      }
+    }
   }
 
   /**
    * Clears previous frames and draws new content
    */
-  function drawCanvas(ctx: CanvasRenderingContext2D, fps: number) {
+  function drawCanvas(ctx: CanvasRenderingContext2D, fps: number): void {
     // Clears previous frame
     ctx.clearRect(0, 0, 500, 700);
 
@@ -76,6 +143,7 @@ function App() {
 
     // Draw white ball
     whiteBall.draw(ctx);
+    redBalls.forEach((ball) => ball.draw(ctx));
   }
 
   return <canvas ref={canvasRef} width="500" height="700" />;

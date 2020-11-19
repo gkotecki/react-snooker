@@ -3,6 +3,7 @@ import { CanvasPosition, Velocity } from "./Types";
 
 export class Ball extends GameObject {
   color: string;
+  readonly radius = 12;
 
   constructor(position: CanvasPosition, velocity: Velocity, color: string) {
     super(position, velocity);
@@ -17,7 +18,7 @@ export class Ball extends GameObject {
   draw(ctx: CanvasRenderingContext2D) {
     ctx.fillStyle = this.color;
     ctx.beginPath();
-    ctx.arc(this.x, this.y, 12, 0, 2*Math.PI);
+    ctx.arc(this.x, this.y, this.radius, 0, 2*Math.PI);
     ctx.fill();
   }
 }
