@@ -7,23 +7,23 @@ function App() {
   const canvasRef = useRef(null);
 
   // Initializing game entities
-  const whiteBall = new Ball([280,550], [-8,-85], "#fff");
+  const whiteBall = new Ball([280,550], [-80,-850], "#fff");
   const redBalls = [
-    new Ball([170 + 26*1,150], [0,0], "#f22"),
-    new Ball([170 + 26*2,150], [0,0], "#f22"),
-    new Ball([170 + 26*3,150], [0,0], "#f22"),
-    new Ball([170 + 26*4,150], [0,0], "#f22"),
-    new Ball([170 + 26*5,150], [0,0], "#f22"),
-    new Ball([183 + 26*1,172], [0,0], "#f22"),
-    new Ball([183 + 26*2,172], [0,0], "#f22"),
-    new Ball([183 + 26*3,172], [0,0], "#f22"),
-    new Ball([183 + 26*4,172], [0,0], "#f22"),
-    new Ball([196 + 26*1,194], [0,0], "#f22"),
-    new Ball([196 + 26*2,194], [0,0], "#f22"),
-    new Ball([196 + 26*3,194], [0,0], "#f22"),
-    new Ball([209 + 26*1,216], [0,0], "#f22"),
-    new Ball([209 + 26*2,216], [0,0], "#f22"),
-    new Ball([222 + 26*1,238], [0,0], "#f22"),
+    new Ball([170 + 26*1,150], [0,0], "#22f"),
+    new Ball([170 + 26*2,150], [0,0], "#22f"),
+    new Ball([170 + 26*3,150], [0,0], "#22f"),
+    new Ball([170 + 26*4,150], [0,0], "#22f"),
+    new Ball([170 + 26*5,150], [0,0], "#22f"),
+    new Ball([183 + 26*1,172], [0,0], "#22f"),
+    new Ball([183 + 26*2,172], [0,0], "#22f"),
+    new Ball([183 + 26*3,172], [0,0], "#22f"),
+    new Ball([183 + 26*4,172], [0,0], "#22f"),
+    new Ball([196 + 26*1,194], [0,0], "#22f"),
+    new Ball([196 + 26*2,194], [0,0], "#22f"),
+    new Ball([196 + 26*3,194], [0,0], "#22f"),
+    new Ball([209 + 26*1,216], [0,0], "#22f"),
+    new Ball([209 + 26*2,216], [0,0], "#22f"),
+    new Ball([222 + 26*1,238], [0,0], "#22f"),
   ];
 
   /**
@@ -78,15 +78,19 @@ function App() {
 
       // Check for left and right
       if (ball1.x < 50 + ball1.radius) {
+        ball1.isColliding = true;
         ball1.vx = Math.abs(ball1.vx) * 0.7;
       } else if (ball1.x > 450 - ball1.radius) {
+        ball1.isColliding = true;
         ball1.vx = -Math.abs(ball1.vx) * 0.7;
       }
 
       // Check for bottom and top
       if (ball1.y < 50 + ball1.radius) {
+        ball1.isColliding = true;
         ball1.vy = Math.abs(ball1.vy) * 0.7;
       } else if (ball1.y > 650 - ball1.radius) {
+        ball1.isColliding = true;
         ball1.vy = -Math.abs(ball1.vy) * 0.7;
       }
 
