@@ -3,6 +3,7 @@ import { CanvasPosition, Velocity } from "./Types";
 
 export class Ball extends GameObject {
   color: string;
+  outOfBounds = false;
   showLogs = false;
   readonly radius = 12;
 

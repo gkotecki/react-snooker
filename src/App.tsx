@@ -1,13 +1,15 @@
-import React, { useRef, useEffect } from "react";
+import { remove } from "lodash";
+import React, { useEffect, useRef } from "react";
 import { Ball } from "./common/Ball";
 import { Collision } from "./common/Collision";
+import { Hole } from "./common/Hole";
 
 function App() {
   // React canvas element reference
   const canvasRef = useRef(null);
 
   // Initializing game entities
-  const whiteBall = new Ball([280,550], [-80,-850], "#fff");
+  const whiteBall = new Ball([280,550], [0,0], "#fff");
   const redBalls = [
     new Ball([170 + 26*1,150], [0,0], "#22f"),
     new Ball([170 + 26*2,150], [0,0], "#22f"),
@@ -25,6 +27,14 @@ function App() {
     new Ball([209 + 26*2,216], [0,0], "#22f"),
     new Ball([222 + 26*1,238], [0,0], "#22f"),
   ];
+  const holes = [
+    new Hole([55, 55]),
+    new Hole([445, 55]),
+    new Hole([50, 350]),
+    new Hole([450, 350]),
+    new Hole([55, 645]),
+    new Hole([445, 645]),
+  ]
 
   /**
    * React update hook
@@ -57,6 +67,10 @@ function App() {
    * Updates game state to prepare for next draw cycle
    */
   function updateState(secondsPassed: number): void {
+    // Remove out-of-bounds balls from stack
+    remove(redBalls, ({ outOfBounds }) => outOfBounds)
+
+    // Calls update on every entity
     whiteBall.update(secondsPassed);
     redBalls.forEach((ball) => ball.update(secondsPassed));
   }
@@ -66,17 +80,20 @@ function App() {
    */
   function detectCollisions(): void {
     const gameObjects: Ball[] = [whiteBall, ...redBalls];
-    let ball1: Ball;
-    let ball2: Ball;
-
-    // Resets all entities collision state to false
-    gameObjects.forEach((b) => b.isColliding = false);
 
     // Loop between all entities to check for individual collision
     for (let i = 0; i < gameObjects.length; i++) {
-      ball1 = gameObjects[i];
+      let ball1: Ball = gameObjects[i];
+      ball1.isColliding = false;
 
-      // Check for left and right
+      // Checks if the ball reached a hole
+      holes.forEach((hole) => {
+        if (Collision.onHole(ball1, hole)) {
+          ball1.outOfBounds = true;
+        }
+      });
+
+      // Check for wall hits left and right
       if (ball1.x < 50 + ball1.radius) {
         ball1.isColliding = true;
         ball1.vx = Math.abs(ball1.vx) * 0.7;
@@ -85,7 +102,7 @@ function App() {
         ball1.vx = -Math.abs(ball1.vx) * 0.7;
       }
 
-      // Check for bottom and top
+      // Check for wall hits bottom and top
       if (ball1.y < 50 + ball1.radius) {
         ball1.isColliding = true;
         ball1.vy = Math.abs(ball1.vy) * 0.7;
@@ -94,8 +111,10 @@ function App() {
         ball1.vy = -Math.abs(ball1.vy) * 0.7;
       }
 
+      // Iterates over all possible ball pairs
       for (let j = i + 1; j < gameObjects.length; j++) {
-        ball2 = gameObjects[j];
+        let ball2: Ball = gameObjects[j];
+        ball2.isColliding = false;
 
         if (Collision.onBalls(ball1, ball2)) {
           ball1.isColliding = true;
@@ -143,27 +162,26 @@ function App() {
     ctx.fillStyle = "#090";
     ctx.fillRect(50, 50, 400, 600);
 
-    //Draw table holes
-    ctx.fillStyle = "#000";
-    ctx.beginPath();
-    ctx.arc(55, 55, 18, 0, 2*Math.PI);
-    ctx.arc(445, 55, 18, 0, 2*Math.PI);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.arc(50, 350, 18, 0, 2*Math.PI);
-    ctx.arc(450, 350, 18, 0, 2*Math.PI);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.arc(55, 645, 18, 0, 2*Math.PI);
-    ctx.arc(445, 645, 18, 0, 2*Math.PI);
-    ctx.fill();
-
     // Draw white ball
     whiteBall.draw(ctx);
     redBalls.forEach((ball) => ball.draw(ctx));
+    holes.forEach((hole) => hole.draw(ctx));
   }
 
-  return <canvas ref={canvasRef} width="500" height="700" />;
+  function mouseClick(event: React.MouseEvent<HTMLCanvasElement, MouseEvent>) {
+    const factor = 3;
+    whiteBall.vx = ((event.clientX - 144) - whiteBall.x) * factor;
+    whiteBall.vy = ((event.clientY - 118) - whiteBall.y) * factor;
+  }
+
+  return (
+    <canvas
+      ref={canvasRef}
+      onClick={mouseClick}
+      width="500"
+      height="700"
+    />
+  );
 }
 
 export default App;

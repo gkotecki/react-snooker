@@ -1,4 +1,5 @@
 import { Ball } from "./Ball";
+import { Hole } from "./Hole";
 
 export class Collision {
   /**
@@ -19,5 +20,21 @@ export class Collision {
   ): boolean {
     const squareDistance = (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2);
     return squareDistance <= (r1 + r2) * (r1 + r2);
+  }
+
+  /**
+   * Checks if a ball center is inside a hole area
+   *
+   * @param ball - Ball object
+   * @param hole - Hole object
+   *
+   * @returns out-of-bounds state
+   */
+  static onHole(
+    { x: x1, y: y1 }: Ball,
+    { x: x2, y: y2, radius: r2 }: Hole
+  ): boolean {
+    const squareDistance = (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2);
+    return squareDistance < r2 * r2;
   }
 }
