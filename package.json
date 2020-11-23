@@ -2,6 +2,7 @@
   "name": "react-snooker",
   "version": "0.1.0",
   "private": true,
+  "homepage": "http://gkotecki.github.io/react-snooker",
   "dependencies": {
     "@testing-library/jest-dom": "5.11.6",
     "@testing-library/react": "11.1.2",
@@ -20,6 +21,8 @@
   },
   "scripts": {
     "docker": "docker-compose down && docker-compose up -d --build",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
@@ -42,5 +45,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "gh-pages": "^3.1.0"
   }
 }
