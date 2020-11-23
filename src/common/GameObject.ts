@@ -1,4 +1,4 @@
-import { CanvasPosition, Velocity } from "./Types";
+import { CanvasPosition } from "./Types";
 
 /**
  * Generic game object
@@ -10,11 +10,9 @@ export class GameObject {
   vy: number;
   isColliding: boolean;
 
-  constructor(position: CanvasPosition, velocity: Velocity) {
+  constructor(position: CanvasPosition) {
     this.x = position[0];
     this.y = position[1];
-    this.vx = velocity[0];
-    this.vy = velocity[1];
 
     this.isColliding = false;
   }

@@ -1,12 +1,10 @@
 import { GameObject } from "./GameObject";
-import { CanvasPosition } from "./Types";
 
+/**
+ * Hole entity
+ */
 export class Hole extends GameObject {
   readonly radius = 18;
-
-  constructor(position: CanvasPosition) {
-    super(position, [0,0]);
-  }
 
   update() {}
 

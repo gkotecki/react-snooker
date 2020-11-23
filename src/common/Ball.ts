@@ -1,14 +1,21 @@
 import { GameObject } from "./GameObject";
 import { CanvasPosition, Velocity } from "./Types";
 
+/**
+ * Ball entity
+ */
 export class Ball extends GameObject {
+  vx: number;
+  vy: number;
   color: string;
   outOfBounds = false;
   showLogs = false;
   readonly radius = 12;
 
   constructor(position: CanvasPosition, velocity: Velocity, color: string, showLogs?: boolean) {
-    super(position, velocity);
+    super(position);
+    this.vx = velocity[0];
+    this.vy = velocity[1];
     this.color = color;
     this.showLogs = showLogs;
   }

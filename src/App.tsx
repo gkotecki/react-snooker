@@ -10,7 +10,7 @@ function App() {
 
   // Initializing game entities
   const whiteBall = new Ball([280,550], [0,0], "#fff");
-  const redBalls = [
+  const blueBalls = [
     new Ball([170 + 26*1,150], [0,0], "#22f"),
     new Ball([170 + 26*2,150], [0,0], "#22f"),
     new Ball([170 + 26*3,150], [0,0], "#22f"),
@@ -68,18 +68,18 @@ function App() {
    */
   function updateState(secondsPassed: number): void {
     // Remove out-of-bounds balls from stack
-    remove(redBalls, ({ outOfBounds }) => outOfBounds)
+    remove(blueBalls, ({ outOfBounds }) => outOfBounds)
 
     // Calls update on every entity
     whiteBall.update(secondsPassed);
-    redBalls.forEach((ball) => ball.update(secondsPassed));
+    blueBalls.forEach((ball) => ball.update(secondsPassed));
   }
 
   /**
    * Detects collisions between all entities
    */
   function detectCollisions(): void {
-    const gameObjects: Ball[] = [whiteBall, ...redBalls];
+    const gameObjects: Ball[] = [whiteBall, ...blueBalls];
 
     // Loop between all entities to check for individual collision
     for (let i = 0; i < gameObjects.length; i++) {
@@ -93,22 +93,24 @@ function App() {
         }
       });
 
+      const absorption = 0.8;
+
       // Check for wall hits left and right
       if (ball1.x < 50 + ball1.radius) {
         ball1.isColliding = true;
-        ball1.vx = Math.abs(ball1.vx) * 0.7;
+        ball1.vx = Math.abs(ball1.vx) * absorption;
       } else if (ball1.x > 450 - ball1.radius) {
         ball1.isColliding = true;
-        ball1.vx = -Math.abs(ball1.vx) * 0.7;
+        ball1.vx = -Math.abs(ball1.vx) * absorption;
       }
 
       // Check for wall hits bottom and top
       if (ball1.y < 50 + ball1.radius) {
         ball1.isColliding = true;
-        ball1.vy = Math.abs(ball1.vy) * 0.7;
+        ball1.vy = Math.abs(ball1.vy) * absorption;
       } else if (ball1.y > 650 - ball1.radius) {
         ball1.isColliding = true;
-        ball1.vy = -Math.abs(ball1.vy) * 0.7;
+        ball1.vy = -Math.abs(ball1.vy) * absorption;
       }
 
       // Iterates over all possible ball pairs
@@ -153,7 +155,7 @@ function App() {
 
     // Draw FPS string
     ctx.font = "14px monospace";
-    ctx.fillStyle = "black";
+    ctx.fillStyle = "#000";
     ctx.fillText("FPS: " + fps, 0, 11);
 
     // Draw billiards table
@@ -162,16 +164,24 @@ function App() {
     ctx.fillStyle = "#090";
     ctx.fillRect(50, 50, 400, 600);
 
-    // Draw white ball
-    whiteBall.draw(ctx);
-    redBalls.forEach((ball) => ball.draw(ctx));
+    //Draw holes
     holes.forEach((hole) => hole.draw(ctx));
+
+    // Draw balls
+    whiteBall.draw(ctx);
+    blueBalls.forEach((ball) => ball.draw(ctx));
   }
 
-  function mouseClick(event: React.MouseEvent<HTMLCanvasElement, MouseEvent>) {
+  /**
+   * Mouse click event handler
+   *
+   * @param event - mouse click event
+   */
+  function mouseClick(event: React.MouseEvent<HTMLCanvasElement, MouseEvent>): void {
+    const canvas: HTMLElement = canvasRef.current;
     const factor = 3;
-    whiteBall.vx = ((event.clientX - 144) - whiteBall.x) * factor;
-    whiteBall.vy = ((event.clientY - 118) - whiteBall.y) * factor;
+    whiteBall.vx = ((event.clientX - canvas.offsetLeft) - whiteBall.x) * factor;
+    whiteBall.vy = ((event.clientY - canvas.offsetTop) - whiteBall.y) * factor;
   }
 
   return (
